@@ -1,11 +1,14 @@
 import numpy as np
 from scipy import linalg
+import matplotlib.pyplot as plt
 
 def steepest_descent(A,b,x):
+    errs = []
     r = b - np.dot(A,x)
     r_squared = np.dot(r,r)
     i = 1
     while r_squared > 1e-24:
+        errs.append(r_squared)
         A_r = np.dot(A,r)
         alpha = (r_squared)/(np.dot(r,A_r))
         x += alpha*r
@@ -16,14 +19,16 @@ def steepest_descent(A,b,x):
         r_squared = np.dot(r,r)
         i+=1
     print (i)
-    return x
+    return x, errs
 
 def cgd(A,b,x):
+    errs = []
     r = b - np.dot(A,x)
     d = r
     r_squared = np.dot(r,r)
     i = 0
     while r_squared > 1e-24:
+        errs.append(r_squared)
         A_d = np.dot(A,d)
         alpha = (r_squared)/(np.dot(d,A_d))
         x += alpha*d
@@ -35,22 +40,29 @@ def cgd(A,b,x):
         d = r + beta*d
         i+=1
     print (i)
-    return x
-
-
-    return x
+    return x, errs
 
 
 
-
+#np.random.seed(10)
 A = np.loadtxt("A_matrix.txt")
-b = np.array([1.,4.3,2.,-5.,0.,1.,6.,2.,-9.4,10.,0.,-1.,7.])
-x = np.zeros(13)
+b = np.random.normal(scale = 10,size = 13)
+x = np.random.normal(scale = 10,size = 13)
 
-x = steepest_descent(A,b,x)
+x, errs_sd = steepest_descent(A,b,x)
 print (x)
 print (np.dot(A,x)-b,"\n")
 x = np.zeros(13)
-x = cgd(A,b,x)
+x, errs_cgd = cgd(A,b,x)
 print (x)
 print (np.dot(A,x)-b,"\n")
+
+plt.yscale('log')
+
+plt.plot(errs_sd)
+
+
+plt.yscale('log')
+
+plt.plot(errs_cgd)
+plt.show()
